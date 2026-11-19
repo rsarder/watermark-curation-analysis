@@ -1,0 +1,74 @@
+name = "ag-news-smoke"
+protocol_version = "tokenized-v2"
+
+[data]
+dataset_id = "fancyzhx/ag_news"
+revision = "eb185aade064a813bc0b7f42de02595523103ca4"
+seed = 42
+target_label = 0
+validation_fraction = 0.10
+calibration_probe_size = 60
+evaluation_probe_size = 60
+max_train_records = 2000
+
+[paths]
+# Paths resolve relative to this configuration file.
+output_dir = "../data/processed/tokenized-v2/smoke"
+cache_dir = "../.cache/datasets"
+watermark_dir = "../data/watermarked/tokenized-v2/smoke"
+embedding_dir = "../data/embeddings/tokenized-v2/smoke"
+curation_dir = "../data/curated/tokenized-v2/smoke"
+metrics_dir = "../artifacts/metrics/tokenized-v2/smoke"
+training_dir = "../artifacts/models/tokenized-v2/smoke"
+
+# The watermark command uses this section; later stages remain planned.
+[plan.watermark]
+injection_rate = 0.01
+share_source_record_ids = true
+unrelated_phrase = "cobalt lantern meadow"
+natural_sentence = "This report provides a brief update on the situation."
+
+[plan.embedding]
+model_id = "sentence-transformers/all-MiniLM-L6-v2"
+revision = "c9745ed1d9f207416be6d2e6f8de32d1f16199bf"
+max_seq_length = 256
+batch_size = 64
+device = "cpu"
+threads = 6
+
+[plan.curation]
+methods = ["semantic_deduplication", "embedding_knn_outlier"]
+removal_budgets = [0.01, 0.05, 0.10]
+matched_random_controls = true
+random_seeds = [42]
+dedup_similarity_threshold = 0.90
+knn_k = 10
+search_batch_size = 256
+threads = 6
+
+[plan.classifier]
+model_id = "distilbert/distilbert-base-uncased"
+revision = "12040accade4e8a0f71eabdb258fecc2e7e948be"
+training_seeds = [42]
+epochs = 2
+batch_size = 8
+eval_batch_size = 16
+learning_rate = 2e-5
+weight_decay = 0.01
+warmup_ratio = 0.1
+max_grad_norm = 1.0
+max_length = 256
+checkpoint_steps = 500
+device = "cuda"
+threads = 6
+# Small deterministic samples for plumbing checks, not research conclusions.
+max_train_records = 128
+max_validation_records = 64
+
+[plan.verification]
+alpha = 0.05
+report_p_values = true
+plan_version = "paired-sign-v1"
+plan_file = "docs/VERIFICATION_PLAN.md"
+correction = "holm"
+family_size = 150

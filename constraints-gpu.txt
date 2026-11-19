@@ -1,0 +1,12 @@
+# Validated Windows/Python 3.12 environment for the RTX 4070 laptop (CUDA 12.8).
+# Install the torch wheel from the official cu128 index before the project extras.
+torch==2.11.0+cu128
+datasets==5.1.0
+fsspec==2026.7.0
+transformers==5.23.0
+sentence-transformers==5.7.0
+numpy==2.5.4
+pandas==3.1.1
+pyarrow==26.0.1
+scikit-learn==1.9.1
+threadpoolctl==3.8.0
